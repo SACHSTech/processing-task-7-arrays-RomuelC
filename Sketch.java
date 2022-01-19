@@ -2,55 +2,85 @@ import processing.core.PApplet;
 
 public class Sketch extends PApplet {
 
-	float[] circleY = new float[25];
-
-  int num = 50;
-  int[] x = new int[num];
-  int[] y = new int[num];
-	
   public void settings() {
+
     size(400, 400);
+  }
+  // Mouse Settings
+  int num = 10;
+  float[] MouseX = new float[num];
+  float[] MouseY = new float[num];
+  int indexPosition = 0;
 
-    for (int i = 0; i < circleY.length; i++) {
-      circleY[i] = random(height);
-    }
-          for (int p = num-1; p > 0; p--) {
-            x[p] = x[p-1];
-            y[p] = y[p-1];
-          }
+  // Snow Settings
+  float[] snowY;
+  float speed = 1;
+
+  float[] snowPile;
+  float snowHeight = height;
+
   
-          x[0] = mouseX;
-          y[0] = mouseY;    
-  }
 
- 
   public void setup() {
-    background(210, 255, 173);
 
-    size(100, 100);
-    noStroke();
-    fill(255, 102);
+    snowY = new float [width];
+    snowPile = new float[width];
     background(0);
+    for(int i = 0; i < snowY.length; i++){
+      snowY[i] = random(0, height);
+    }
   }
+
 
   public void draw() {
 
-    background(50);
+    // Snow Falling Down
+    background(0);
+    fill(255);
 
-    for (int i = 0; i < circleY.length; i++) {
-      float circleX = width * i / circleY.length;
-      ellipse(circleX, circleY[i], 25, 25);
-  
-      circleY[i] ++;
-  
-      if (circleY[i] > height) {
-        circleY[i] = 0;
+    for(int i = 0; i < snowY.length; i++){
+      ellipse(i * 2, snowY[i], width / 30, height / 30);
+      snowY[i] += speed;
 
-    for (int p = 0; p < num; p++) {
-      ellipse(x[p], y[p], p/ (float) 2.0, p/ (float) 2.0);          
-          }
+      if(snowY[i] > height){
+        snowY[i] = 0;
+        snowPile[i] += (width / 40);
       }
-          
+    }
+
+    // Snow Piling Up
+
+    for(int i = 0; i < snowPile.length; i++){
+      rect(i * 2, height - snowPile[i], width / 30, height);
+    }
+
+    
+
+    // Shifting the values to the right
+    noStroke();
+    for (int i = MouseX.length - 1; i > 0; i--) {
+      MouseX[i] = MouseX[i - 1];
+      MouseY[i] = MouseY[i - 1];
+    }
+
+    // Add the new values to the beginning of the array
+    MouseX[0] = mouseX;
+    MouseY[0] = mouseY;
+
+    // Cursor Circles / Trails
+    for (int i = 0; i < MouseX.length; i++) {
+      tint(255, 128);
+      ellipse(MouseX[i], MouseY[i], 30 - i, 30 - i);
+        }
+
   }
-}
+  
+  public void keyPressed(){
+    if(keyCode == UP){
+      speed += (float) (1.5);
+    }
+    else if (keyCode == DOWN && speed > 3){
+      speed -= (float) (1.5);
+    }
+  }
 }
